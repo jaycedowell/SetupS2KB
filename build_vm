@@ -1,0 +1,8 @@
+.comp setup_s2kb
+.comp setup_s2kb_help_event
+.comp update_overlay_cache
+.comp update_overlay_ned
+.comp querydss2
+resolve_all
+save,/routines,filename='setup_s2kb.sav'
+
