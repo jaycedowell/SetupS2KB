@@ -186,7 +186,7 @@ if NOT Keyword_Set(Refresh) then begin
 	
 	temp = s2kb
 	s2kb = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: temp.image, Header: temp.header, Astrom: temp.astrom, NED: Result}
+		Image: temp.image, NED: Result}
 	;DelVarX, temp
 	temp = 0
 endif
@@ -218,13 +218,8 @@ for n=0L,(s2kb.NED.Number-1) do begin
 
 	if Object.Velocity EQ -9999.9 then begin
 		if s2kb_setup.NED_Unknown EQ 1 then begin
-			ad2xy, Object.RA2000, Object.Dec2000, S2KB.Astrom, normx, normy
-			plots, normx*[1,1]/(size(S2KB.Image))[1], normy*[1,1]/(size(S2KB.Image))[2], PSym=Symbol, Color=FSC_Color('Orange'), $
-				/Norm
-			;plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=Symbol, Color=FSC_Color('Orange')
-			xyouts, normx/(size(S2KB.Image))[1], normy/(size(S2KB.Image))[2], string(list_count,Format='(I3)'), /Norm, $
-				Color=FSC_Color('Orange')
-			;xyouts, Object.RA2000, Object.Dec2000, string(list_count,Format='(I3)'), /Data, Color=FSC_Color('Orange')
+			plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=Symbol, Color=FSC_Color('Orange')
+			xyouts, Object.RA2000, Object.Dec2000, string(list_count,Format='(I3)'), /Data, Color=FSC_Color('Orange')
 	
 			out_str = string(list_count, Format='(I3)')+': '+string(Object.Name, Format='(A-28)')+' ['+$
 				string(Object.Type, Format='(A-6)')+'] @    ??? km/s'
@@ -236,13 +231,8 @@ for n=0L,(s2kb.NED.Number-1) do begin
 		endelse
 	endif else begin
 		if s2kb_setup.NED_Known EQ 1 then begin
-			ad2xy, Object.RA2000, Object.Dec2000, S2KB.Astrom, normx, normy
-			plots, normx*[1,1]/(size(S2KB.Image))[1], normy*[1,1]/(size(S2KB.Image))[2], PSym=Symbol, Color=FSC_Color('Yellow'), $
-				/Norm
-			;plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=Symbol, Color=FSC_Color('Yellow')
-			xyouts, normx/(size(S2KB.Image))[1], normy/(size(S2KB.Image))[2], string(list_count,Format='(I3)'), $
-				/Norm, Color=FSC_Color('Yellow')
-			;xyouts, Object.RA2000, Object.Dec2000, string(list_count,Format='(I3)'), /Data, Color=FSC_Color('Yellow')
+			plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=Symbol, Color=FSC_Color('Yellow')
+			xyouts, Object.RA2000, Object.Dec2000, string(list_count,Format='(I3)'), /Data, Color=FSC_Color('Yellow')
 	
 			out_str = string(list_count, Format='(I3)')+': '+string(Object.Name, Format='(A-28)')+' ['+$
 				string(Object.Type, Format='(A-6)')+'] @ '
@@ -261,16 +251,11 @@ for n=0L,(s2kb.NED.Number-1) do begin
 				for j=0L,(n_elements(Filters)-1) do begin
 					if s2kb_setup.ha_filters[Filters[j]] EQ 1 then begin
 						did_plot = 1
-						ad2xy, Object.RA2000, Object.Dec2000, S2KB.Astrom, normx, normy
-						plots, normx*[1,1]/(size(S2KB.Image))[1], normy*[1,1]/(size(S2KB.Image))[2], $
-							PSym=Symbol, Color=FSC_Color(Colors[j]), /Norm
-						;plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=(Symbol+j), $
-						;	Color=FSC_Color(Colors[j])
+						plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=(Symbol+j), $
+							Color=FSC_Color(Colors[j])
 						if j EQ 0 then $
-							xyouts, normx/(size(S2KB.Image))[1], normy/(size(S2KB.Image))[2], $
-								string(list_count,Format='(I3)'), /Norm, Color=FSC_Color(Colors[j])
-							;xyouts, Object.RA2000, Object.Dec2000, $
-							;	string(list_count,Format='(I3)'), /Data, Color=FSC_Color(Colors[j])
+							xyouts, Object.RA2000, Object.Dec2000, $
+								string(list_count,Format='(I3)'), /Data, Color=FSC_Color(Colors[j])
 					endif
 				endfor
 			endif

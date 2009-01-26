@@ -27,7 +27,7 @@ ned_control = {G: 0L, GG: 0L, QSO: 0L, PofG: 0L, S: 0L, SN: 0L, $
 	       UseG: 0, UseGG: 0, UseQSO: 0, UsePofG: 0, UseS: 0, UseSN: 0, $
 	       UseU_Rad: 0, UseU_Smm: 0, UseU_Ifr: 0, UseU_Vis: 0, UseU_UlV: 0, UseU_XRy: 0, UseU_GRy: 0}
 ;+ s2kb -> strucuture that deals with the S2KB image field-of-view
-s2kb  = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(1470,1470), header: '', astrom: '', ned: strarr(1) }
+s2kb  = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(1470,1470), ned: strarr(1) }
 ;+ north * south -> structures that deal with the guider camera fields-of-view
 north = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(412,412),   gsc: strarr(1) }
 south = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(412,412),   gsc: strarr(1) }
@@ -731,14 +731,13 @@ endif else begin
 	s2kb.decmin = dec - 25.0/2.0/60.0
 	s2kb.decmax = dec + 25.0/2.0/60.0
 
-	querydss2, [ra, dec], opticaldssimage, Hdr, survey='2b', imsize=25.0, /STSCI
+	querydss2, [ra, dec], opticaldssimage, Hdr, survey='2b', imsize=25.0, /STSCI, /GIF
 	if (size(opticaldssimage))[0] NE 2 then $
 		querydss2, [ra, dec], opticaldssimage, Hdr, survey='1', imsize=25.0, /ESO
-	extast, Hdr, astrom
 
 	temp = s2kb
 	s2kb = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: opticaldssimage, Header: Hdr, Astrom: astrom, NED: temp.NED}
+		Image: opticaldssimage, ED: temp.NED}
 	;DelVarX, temp
 	temp = 0
 
@@ -772,15 +771,14 @@ nra = (nra+360.0) mod 360.0
 ndec = dec + 2610.0/3600.0
 
 if NOT Keyword_Set(Refresh) then begin
-	querydss2, [nra, ndec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI
+	querydss2, [nra, ndec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI, /GIF
 	if (size(opticaldssimage))[0] NE 2 then $
 		querydss2, [nra, ndec], opticaldssimage, Hdr, survey='1', imsize=7.0, /ESO
-	extast, Hdr, astrom
 	nstars = queryvizier('GSC2.3', [nra, ndec], [7.0, 7.0], /AllColumns, /Canada)
 
 	temp = north
 	north = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: opticaldssimage, Header: Hdr, Astrom: astrom, gsc: nstars}
+		Image: opticaldssimage, gsc: nstars}
 	;DelVarX, temp
 	temp = 0
 endif
@@ -795,15 +793,11 @@ xyouts, 300, 120, '1''', /Data, Alignment=0.5, Color=FSC_Color('White')
 
 valid = where( north.gsc.vmag LE s2kb_setup.MagLimit and finite(north.gsc.vmag) EQ 1 )
 if valid[0] NE -1 then begin
-	ad2xy, (north.gsc.raj2000)[valid], (north.gsc.dej2000)[valid], north.Astrom, normx, normy
-	plots, normx/(size(north.Image))[1], normy/(size(north.Image))[2], /Norm, PSym=6, Color=FSC_Color('Blue')
-	;x = cos(north.gsc.dej2000[valid]/!radeg)*(-(north.gsc.raj2000)[valid]+nra)*3600.0/0.2 + 1050
-	;y = ((north.gsc.dej2000)[valid]-ndec)*3600.0/0.2 + 1050
-	;oplot, x,y, PSym=6, Color=FSC_Color('Blue')
-	xyouts, normx/(size(north.Image))[1]+0.05, normy/(size(north.Image))[2]-0.05, string((north.gsc.vmag)[valid],Format='(F4.1)'), $
-		/Norm, Color=FSC_Color('Blue')
-	;xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
-	;	Color=FSC_Color('Blue')
+	x = cos(north.gsc.dej2000[valid]/!radeg)*(-(north.gsc.raj2000)[valid]+nra)*3600.0/0.2 + 1050
+	y = ((north.gsc.dej2000)[valid]-ndec)*3600.0/0.2 + 1050
+	oplot, x,y, PSym=6, Color=FSC_Color('Blue')
+	xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
+		Color=FSC_Color('Blue')
 endif
 
 widget_control, s2kb_setup.sgdwin, get_value=index
@@ -814,15 +808,14 @@ sra = (sra+360.0) mod 360.0
 sdec = dec - 2410.0/3600.0
 
 if NOT Keyword_Set(Refresh) then begin
-	querydss2, [sra, sdec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI
+	querydss2, [sra, sdec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI, /GIF
 	if (size(opticaldssimage))[0] NE 2 then $
 		querydss2, [sra, sdec], opticaldssimage, Hdr, survey='1', imsize=7.0, /ESO
-	extast, Hdr, astrom
 	sstars = queryvizier('GSC2.3', [sra, sdec], [7.0, 7.0], /AllColumns, /Canada)
 
 	temp = south
 	south = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: opticaldssimage, Header: Hdr, Astrom: astrom, gsc: sstars}
+		Image: opticaldssimage, gsc: sstars}
 	;DelVarX, temp
 	temp = 0
 endif
@@ -837,15 +830,11 @@ xyouts, 300, 120, '1''', /Data, Alignment=0.5, Color=FSC_Color('White')
 
 valid = where( south.gsc.vmag LE s2kb_setup.MagLimit and finite(south.gsc.vmag) EQ 1 )
 if valid[0] NE -1 then begin
-	ad2xy, (south.gsc.raj2000)[valid], (south.gsc.dej2000)[valid], south.Astrom, normx, normy
-	plots, normx/(size(south.Image))[1], normy/(size(south.Image))[2], /Norm, PSym=6, Color=FSC_Color('Blue')
-	;x = cos(south.gsc.dej2000[valid]/!radeg)*(-(south.gsc.raj2000)[valid]+sra)*3600.0/0.2 + 1050
-	;y = ((south.gsc.dej2000)[valid]-sdec)*3600.0/0.2 + 1050
-	;oplot, x,y, PSym=6, Color=FSC_Color('Blue')
-	xyouts, normx/(size(south.Image))[1]+0.05, normy/(size(south.Image))[2]-0.05, string((south.gsc.vmag)[valid],Format='(F4.1)'), $
-		/Norm, Color=FSC_Color('Blue')
-	;xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
-	;	Color=FSC_Color('Blue')
+	x = cos(south.gsc.dej2000[valid]/!radeg)*(-(south.gsc.raj2000)[valid]+sra)*3600.0/0.2 + 1050
+	y = ((south.gsc.dej2000)[valid]-sdec)*3600.0/0.2 + 1050
+	oplot, x,y, PSym=6, Color=FSC_Color('Blue')
+	xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
+		Color=FSC_Color('Blue')
 endif
 
 end
