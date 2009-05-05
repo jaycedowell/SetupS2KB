@@ -30,10 +30,10 @@ ned_control = {G: 0L, GG: 0L, QSO: 0L, PofG: 0L, S: 0L, SN: 0L, $
 	       UseG: 0, UseGG: 0, UseQSO: 0, UsePofG: 0, UseS: 0, UseSN: 0, $
 	       UseU_Rad: 0, UseU_Smm: 0, UseU_Ifr: 0, UseU_Vis: 0, UseU_UlV: 0, UseU_XRy: 0, UseU_GRy: 0}
 ;+ s2kb -> strucuture that deals with the S2KB image field-of-view
-s2kb  = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(1470,1470), ned: strarr(1) }
+s2kb  = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(1470,1470), header: '', astrom: '', ned: strarr(1) }
 ;+ north * south -> structures that deal with the guider camera fields-of-view
-north = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(412,412),   gsc: strarr(1) }
-south = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(412,412),   gsc: strarr(1) }
+north = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(412,412), header: '', astrom: '', gsc: strarr(1) }
+south = {WinID: 0L, ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, image: dblarr(412,412), header: '', astrom: '', gsc: strarr(1) }
 
 ; Setup the Cache state structure
 cache = {fileID: 0L, file: '', CListID: 0L, cache: strarr(1), sel_coord: 0L, sel_ra: -9999.0, sel_dec: -9999.0}
@@ -187,6 +187,10 @@ widget_control, main, /realize
 xmanager, 'setup_s2kb', main, /No_Block
 
 ; Setup default values
+widget_control, s2kb_setup.U_GIF_B, Set_Button=1
+s2kb_setup.USeGIF = 1
+widget_control, s2kb_setup.U_DSS2B, Set_Button=1
+s2kb_setup.UseSurvey='2b'
 widget_control, s2kb_setup.view_full_button, Set_Button=1
 s2kb_setup.use_full = 1
 s2kb_setup.view_frame = [1L, 1L, 2048L, 2048L]
@@ -393,6 +397,106 @@ case uvalue of
 	;+ Exit
 	'exit_setup': begin
 		widget_control, event.top, /Destroy	
+	end
+
+	;+ Set Survey to DSS 1 - Red
+	'DSS1R': begin
+		widget_control, s2kb_setup.U_DSS1R, Set_Button=1
+		widget_control, s2kb_setup.U_DSS2R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2B, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2I, Set_Button=0
+		widget_control, s2kb_setup.U_SDSS,  Set_Button=0
+		widget_control, s2kb_setup.U_SDSSC, Set_Button=0
+		s2kb_setup.UseSurvey='1'
+
+		if total(s2kb.image) NE 0 then begin
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+		endif
+	end
+	;+ Set Survey to DSS 2 - Red
+	'DSS2R': begin
+		widget_control, s2kb_setup.U_DSS1R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2R, Set_Button=1
+		widget_control, s2kb_setup.U_DSS2B, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2I, Set_Button=0
+		widget_control, s2kb_setup.U_SDSS,  Set_Button=0
+		widget_control, s2kb_setup.U_SDSSC, Set_Button=0
+		s2kb_setup.UseSurvey='2r'
+
+		if total(north.image) NE 0 then begin
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+		endif
+	end
+	;+ Set Survey to DSS 2 - Blue
+	'DSS2B': begin
+		widget_control, s2kb_setup.U_DSS1R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2B, Set_Button=1
+		widget_control, s2kb_setup.U_DSS2I, Set_Button=0
+		widget_control, s2kb_setup.U_SDSS,  Set_Button=0
+		widget_control, s2kb_setup.U_SDSSC, Set_Button=0
+		s2kb_setup.UseSurvey='2b'
+
+		if total(north.image) NE 0 then begin
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+		endif
+	end
+	;+ Set Survey to DSS 2 - Near-IR
+	'DSS2I': begin
+		widget_control, s2kb_setup.U_DSS1R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2B, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2I, Set_Button=1
+		widget_control, s2kb_setup.U_SDSS,  Set_Button=0
+		widget_control, s2kb_setup.U_SDSSC, Set_Button=0
+		s2kb_setup.UseSurvey='2i'
+
+		if total(north.image) NE 0 then begin
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+		endif
+	end
+	;+ Set Survey to SDSS DR7 Grayscale
+	'SDSS': begin
+		widget_control, s2kb_setup.U_DSS1R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2B, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2I, Set_Button=0
+		widget_control, s2kb_setup.U_SDSS,  Set_Button=1
+		widget_control, s2kb_setup.U_SDSSC, Set_Button=0
+		s2kb_setup.UseSurvey='sdss'
+
+		if total(north.image) NE 0 then begin
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+		endif
+	end
+	;+ Set Survey to SDSS DR7 Color
+	'SDSSC': begin
+		widget_control, s2kb_setup.U_DSS1R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2R, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2B, Set_Button=0
+		widget_control, s2kb_setup.U_DSS2I, Set_Button=0
+		widget_control, s2kb_setup.U_SDSS,  Set_Button=0
+		widget_control, s2kb_setup.U_SDSSC, Set_Button=1
+		s2kb_setup.UseSurvey='sdssc'
+
+		if total(north.image) NE 0 then begin
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+		endif
+
+	end
+
+	;+ Set GIF image type
+	'U_GIF': begin
+		widget_control, s2kb_setup.U_GIF_B,  Set_Button=1
+		widget_control, s2kb_setup.U_FITS_B,  Set_Button=0
+		s2kb_setup.UseGIF = 1
+
+	end
+	;+ Set FITS image tyep
+	'U_FITS': begin
+		widget_control, s2kb_setup.U_GIF_B,  Set_Button=0
+		widget_control, s2kb_setup.U_FITS_B,  Set_Button=1
+		s2kb_setup.UseGIF = 0
 	end
 	else:
 endcase
@@ -744,7 +848,14 @@ widget_control, s2kb.WinID, get_value=index
 wset, index
 
 if Keyword_Set(Refresh) then begin
-	tvscl, congrid(s2kb.image,floor(wscl*512),floor(wscl*512)), 0, 0
+	if strcmp(s2kb_setup.UseSurvey, 'sdssc') then begin
+		device, decomposed=1
+		tv, congrid(s2kb.image,3,floor(wscl*512),floor(wscl*512)), 0, 0, True=1
+		device, decomposed=0
+	endif else begin
+		loadct,0,/Silent
+		tvscl, congrid(s2kb.image,floor(wscl*512),floor(wscl*512)), 0, 0
+	endelse
 
 endif else begin
 	s2kb.ramin =  ra  - 25.0/2.0/60.0
@@ -752,18 +863,28 @@ endif else begin
 	s2kb.decmin = dec - 25.0/2.0/60.0
 	s2kb.decmax = dec + 25.0/2.0/60.0
 
-	querydss2, [ra, dec], opticaldssimage, Hdr, survey='2b', imsize=25.0, /STSCI, /GIF
-	if (size(opticaldssimage))[0] NE 2 then $
-		querydss2, [ra, dec], opticaldssimage, Hdr, survey='1', imsize=25.0, /ESO
+	querydss2, [ra, dec], opticaldssimage, Hdr, survey=s2kb_setup.UseSurvey, imsize=25.0, /STSCI, GIF=s2kb_setup.UseGIF
+	if (size(opticaldssimage))[0] LT 2 then $
+		querydss2, [ra, dec], opticaldssimage, Hdr, survey=s2kb_setup.UseSurvey, imsize=25.0, /ESO
+	astrom = ''
+	if NOT strcmp(Hdr[0], 'No header found.') then begin
+		extast, Hdr, astrom
+	endif
 
 	temp = s2kb
 	s2kb = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: opticaldssimage, ED: temp.NED}
+		Image: opticaldssimage, Header: Hdr, Astrom: astrom, NED: temp.NED}
 	;DelVarX, temp
 	temp = 0
 
-	loadct,0,/Silent
-	tvscl, congrid(s2kb.image,floor(wscl*512),floor(wscl*512)), 0, 0
+	if strcmp(s2kb_setup.UseSurvey, 'sdssc') then begin
+		device, decomposed=1
+		tv, congrid(s2kb.image,3,floor(wscl*512),floor(wscl*512)), 0, 0, True=1
+		device, decomposed=0
+	endif else begin
+		loadct,0,/Silent
+		tvscl, congrid(s2kb.image,floor(wscl*512),floor(wscl*512)), 0, 0
+	endelse
 endelse
 
 update_overlay_defect, ra, dec, index
@@ -792,18 +913,23 @@ nra = (nra+360.0) mod 360.0
 ndec = dec + 2610.0/3600.0
 
 if NOT Keyword_Set(Refresh) then begin
-	querydss2, [nra, ndec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI, /GIF
+	querydss2, [nra, ndec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI, GIF=s2kb_setup.UseGIF
 	if (size(opticaldssimage))[0] NE 2 then $
 		querydss2, [nra, ndec], opticaldssimage, Hdr, survey='1', imsize=7.0, /ESO
+	astrom = ''
+	if NOT strcmp(Hdr[0], 'No header found.') then begin
+		extast, Hdr, astrom
+	endif
 	nstars = queryvizier('GSC2.3', [nra, ndec], [7.0, 7.0], /AllColumns, /Canada)
 
 	temp = north
 	north = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: opticaldssimage, gsc: nstars}
+		Image: opticaldssimage, Header: Hdr, Astrom: astrom, gsc: nstars}
 	;DelVarX, temp
 	temp = 0
 endif
 
+loadct,0,/Silent
 tvscl,congrid(north.image,floor(wscl*256),floor(wscl*256)), 0, 0
 
 plot, [0,0], /NoData, /NoErase, XRange=[1,2100],XStyle=5,YRange=[1,2100],YStyle=5, Pos=[0,0,1,1]
@@ -814,11 +940,18 @@ xyouts, 300, 120, '1''', /Data, Alignment=0.5, Color=FSC_Color('White')
 
 valid = where( north.gsc.vmag LE s2kb_setup.MagLimit and finite(north.gsc.vmag) EQ 1 )
 if valid[0] NE -1 then begin
-	x = cos(north.gsc.dej2000[valid]/!radeg)*(-(north.gsc.raj2000)[valid]+nra)*3600.0/0.2 + 1050
-	y = ((north.gsc.dej2000)[valid]-ndec)*3600.0/0.2 + 1050
-	oplot, x,y, PSym=6, Color=FSC_Color('Blue')
-	xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
+	if s2kb_setup.UseGIF then begin
+		x = cos(north.gsc.dej2000[valid]/!radeg)*(-(north.gsc.raj2000)[valid]+nra)*3600.0/0.2 + 1050
+		y = ((north.gsc.dej2000)[valid]-ndec)*3600.0/0.2 + 1050
+		oplot, x,y, PSym=6, Color=FSC_Color('Blue')
+		xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
 		Color=FSC_Color('Blue')
+	endif else begin
+		ad2xy, (north.gsc.raj2000)[valid], (north.gsc.dej2000)[valid], north.Astrom, normx, normy
+		plots, normx/(size(north.Image))[1], normy/(size(north.Image))[2], /Norm, PSym=6, Color=FSC_Color('Blue')
+		xyouts, normx/(size(north.Image))[1]+0.05, normy/(size(north.Image))[2]-0.05, string((north.gsc.vmag)[valid],Format='(F4.1)'), $
+			/Norm, Color=FSC_Color('Blue')
+	endelse
 endif
 
 widget_control, s2kb_setup.sgdwin, get_value=index
@@ -829,14 +962,18 @@ sra = (sra+360.0) mod 360.0
 sdec = dec - 2410.0/3600.0
 
 if NOT Keyword_Set(Refresh) then begin
-	querydss2, [sra, sdec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI, /GIF
+	querydss2, [sra, sdec], opticaldssimage, Hdr, survey='1', imsize=7.0, /STSCI, GIF=s2kb_setup.UseGIF
 	if (size(opticaldssimage))[0] NE 2 then $
 		querydss2, [sra, sdec], opticaldssimage, Hdr, survey='1', imsize=7.0, /ESO
+	astrom = ''
+	if NOT strcmp(Hdr[0], 'No header found.') then begin
+		extast, Hdr, astrom
+	endif
 	sstars = queryvizier('GSC2.3', [sra, sdec], [7.0, 7.0], /AllColumns, /Canada)
 
 	temp = south
 	south = {WinID: temp.WinID, RAMin: temp.ramin, RAMax: temp.ramax, DecMin: temp.decmin, DecMax: temp.decmax, $
-		Image: opticaldssimage, gsc: sstars}
+		Image: opticaldssimage, Header: Hdr, Astrom: astrom, gsc: sstars}
 	;DelVarX, temp
 	temp = 0
 endif
@@ -851,11 +988,19 @@ xyouts, 300, 120, '1''', /Data, Alignment=0.5, Color=FSC_Color('White')
 
 valid = where( south.gsc.vmag LE s2kb_setup.MagLimit and finite(south.gsc.vmag) EQ 1 )
 if valid[0] NE -1 then begin
-	x = cos(south.gsc.dej2000[valid]/!radeg)*(-(south.gsc.raj2000)[valid]+sra)*3600.0/0.2 + 1050
-	y = ((south.gsc.dej2000)[valid]-sdec)*3600.0/0.2 + 1050
-	oplot, x,y, PSym=6, Color=FSC_Color('Blue')
-	xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
-		Color=FSC_Color('Blue')
+	if s2kb_setup.UseGIF then begin
+		x = cos(south.gsc.dej2000[valid]/!radeg)*(-(south.gsc.raj2000)[valid]+sra)*3600.0/0.2 + 1050
+		y = ((south.gsc.dej2000)[valid]-sdec)*3600.0/0.2 + 1050
+		oplot, x,y, PSym=6, Color=FSC_Color('Blue')
+		xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'),/Data, $
+			Color=FSC_Color('Blue')
+
+	endif else begin
+		ad2xy, (south.gsc.raj2000)[valid], (south.gsc.dej2000)[valid], south.Astrom, normx, normy
+		plots, normx/(size(south.Image))[1], normy/(size(south.Image))[2], /Norm, PSym=6, Color=FSC_Color('Blue')
+		xyouts, normx/(size(south.Image))[1]+0.05, normy/(size(south.Image))[2]-0.05, string((south.gsc.vmag)[valid],Format='(F4.1)'), $
+			/Norm, Color=FSC_Color('Blue')
+	endelse
 endif
 
 end
@@ -909,12 +1054,9 @@ if NOT xregistered('setup_s2kb_jpeg', /NoShow) then begin
 	dec_str = string(sixty(s2kb_setup.dec, /TrailSign), Format='((I+03),(I02),(I02))')
 
 	directorybase=widget_base(jpeg_output_base, /Column, /Align_Left)
-	  s2kb_setup.jpeg_dir = FSC_FileSelect(directorybase, DirectoryName=pwd+'/', Filename='setup_s2kb_'+ra_str+dec_str+'.jpg', $
+	  s2kb_setup.jpeg_dlg = FSC_FileSelect(directorybase, DirectoryName=pwd+'/', Filename='setup_s2kb_'+ra_str+dec_str+'.jpg', $
 		SelectDirectory=pwd+'/'+'setup_s2kb_'+ra_str+dec_str+'.jpg', XSize=strlen('setup_s2kb_'+ra_str+dec_str+'.jpg')+2, Filter='*.jpg', Read=1, Write=0, MustExist=1)
-; 	  label=widget_label(directorybase, value='Output Directory:')
-; 	  s2kb_setup.jpeg_dir  = widget_text(directorybase, xsize=40, value=pwd+'/', /Editable, uvalue='dir')
-; 	  label=widget_label(directorybase, value='Output File Name:')
-; 	  s2kb_setup.jpeg_file = widget_text(directorybase, xsize=40, value='setup_s2kb_'+ra_str+dec_str+'.jpg', /Editable, uvalue='file')
+          s2kb_setup.jpeg_qual = widget_slider(directorybase, title='JPEG Quality: ', min=25, max=100, value=90, uval='jpeg_slider')
 	
 	buttonbase=widget_base(jpeg_output_base, /Align_Left, /Row)
 	  jpeg_output_export = widget_button(buttonbase, value = ' Save JPEG ', uvalue = 'export', event_pro='setup_s2kb_jpeg_event')
@@ -937,7 +1079,7 @@ widget_control, event.id, get_uvalue = uvalue
 
 case uvalue of 
 	'export': begin
-		widget_control, s2kb_setup.jpeg_dir, get_value=filename
+		widget_control, s2kb_setup.jpeg_dlg, get_value=filename
 		poss_dir = file_dirname(filename)
 		if NOT file_test(poss_dir, /Directory) then begin
 			junk = Error_Message('The directory you have entered does not exist.', /NoName, $
@@ -953,12 +1095,16 @@ case uvalue of
 		thisDevice=!d.name
 		set_plot, 'Z', /COPY
 			
-		Device, Set_Resolution=[640, 828], Z_Buffer=0
-		loadct, 0, /Silent
-		Erase, 255
+		Device, Set_Resolution=[640, 828], Z_Buffer=0, Set_Pixel_Depth=24, Decomposed=1
+		Erase, 'ffffff'x
 
 		; Display all images (inverted)
-		tv, 255B-bytscl(congrid( s2kb.image,512,512)),  20, 296
+		if strcmp(s2kb_setup.UseSurvey, 'sdssc') then begin
+			tv, 255B-s2kb.image, 20, 296, True=1
+		endif else begin
+			loadct, 0, /Silent
+			tv, 255B-bytscl(congrid( s2kb.image,512,512)),  20, 296
+		endelse
 		tv, 255B-bytscl(congrid(north.image,256,256)),  20,  20
 		tv, 255B-bytscl(congrid(south.image,256,256)), 364,  20
 
@@ -969,11 +1115,11 @@ case uvalue of
 		
 		if 79 GT frame[0] AND 79 LT frame[2] AND -280 LT frame[3] then begin
 			yrange = [max([-280, frame[1]]), min([1024, frame[3]])]
-			oplot, [79, 79]+1250,yrange+1250, Color=0
+			oplot, [79, 79]+1250,yrange+1250, Color=FSC_Color('Red')
 		endif
 		if -512 GT frame[0] AND -513 LT frame[2] AND 108 LT frame[3] then begin
 			yrange = [max([108, frame[1]]), min([1024, frame[3]])]
-			oplot, [-513, -513]+1250, yrange+1250, Color=0
+			oplot, [-513, -513]+1250, yrange+1250, Color=FSC_Color('Red')
 		endif
 		oplot, [frame[0], frame[0], frame[2], frame[2], frame[0]]+1250, $
 			[frame[1], frame[3], frame[3], frame[1], frame[1]]+1250, Color=0
@@ -994,7 +1140,7 @@ case uvalue of
 			x = cos(north.gsc.dej2000[valid]/!radeg)*(-(north.gsc.raj2000)[valid]+nra)*3600.0/0.2 + 1050
 			y = ((north.gsc.dej2000)[valid]-ndec)*3600.0/0.2 + 1050
 			oplot, x,y, PSym=6, Color=0
-			xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, Color=0
+			xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, Color=0, CharThick=1.1
 		endif
 
 		oplot, 300*[-0.5,0.5]+300, [1,1]+100, Color=0
@@ -1012,33 +1158,28 @@ case uvalue of
 			x = cos(south.gsc.dej2000[valid]/!radeg)*(-(south.gsc.raj2000)[valid]+sra)*3600.0/0.2 + 1050
 			y = ((south.gsc.dej2000)[valid]-sdec)*3600.0/0.2 + 1050
 			oplot, x,y, PSym=6, Color=0
-			xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'),/Data, Color=0
+			xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'),/Data, Color=0, CharThick=1.1
 		endif
 
 		oplot, 300*[-0.5,0.5]+300, [1,1]+100, Color=0
 		xyouts, 300, 120, '1''', /Data, Alignment=0.5, Color=0
 
 		; Labels
-		xyouts, 0.431, 0.980, 'S2KB', /Norm, Alignment=0.5, Color=0
-		xyouts, 0.231, 0.337, 'North Guide Camera', /Norm, Alignment=0.5, Color=0
-		xyouts, 0.769, 0.337, 'South Guide Camera', /Norm, Alignment=0.5, Color=0
+		xyouts, 0.431, 0.980, 'S2KB', /Norm, Alignment=0.5, Color=0, CharThick=1.1
+		xyouts, 0.231, 0.337, 'North Guide Camera', /Norm, Alignment=0.5, Color=0, CharThick=1.1
+		xyouts, 0.769, 0.337, 'South Guide Camera', /Norm, Alignment=0.5, Color=0, CharThick=1.1
 		
 		xyouts, 0.845, 0.966, 'RA:  '+string(sixty(s2kb_setup.ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))'), /Norm, $
-			Color=0, CharSize=0.85
+			Color=0, CharSize=0.85, CharThick=1.1
 		xyouts, 0.845, 0.951, 'Dec: '+string(sixty(s2kb_setup.dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))'), /Norm, $
-			Color=0, CharSize=0.85
+			Color=0, CharSize=0.85, CharThick=1.1
 
-		snapshot=tvrd()
-		tvlct, r,g,b, /get
+		snapshot=tvrd(/true)
 		device, Z_Buffer=1
 		set_plot, thisDevice
 			
-		image24 = BytArr(3, 640, 828)
-		image24[0,*,*] = r[snapshot]
-		image24[1,*,*] = g[snapshot]
-		image24[2,*,*] = b[snapshot]
-		
-		write_jpeg, filename, image24, true=1, quality=100
+		widget_control, s2kb_setup.jpeg_qual, get_value=qual
+		write_jpeg, filename, snapshot, true=1, quality=qual
 
 		widget_control, event.top, /destroy
 		OhNoError:
@@ -1098,30 +1239,34 @@ case uvalue of
 		widget_control, s2kb_setup.prt_cmd, get_value=printer
 		s2kb_setup.printer = printer
 			
-		Device, filename='~/setup_temp.ps', /Portrait, /Encapsulated, /Inches, $
-			XSize=7.5, YSize=10.
+		Device, filename='s2kb_printer.ps', /Portrait, /Encapsulated, /Inches, $
+			XSize=7.5, YSize=10., Bits_Per_Pixel=8, /Color
 		loadct, 0, /Silent
 
 		;+ Display all images
-		tvimage, 255B-bytscl(congrid( s2kb.image,512,512)), Pos=[0.031, 0.357, 0.831, 0.976]
+		if strcmp(s2kb_setup.UseSurvey, 'sdssc') then begin
+			tvimage, 255B-s2kb.image, Pos=[0.031, 0.357, 0.831, 0.976], True=1
+		endif else begin
+			tvimage, 255B-bytscl(congrid( s2kb.image,512,512)), Pos=[0.031, 0.357, 0.831, 0.976]
+		endelse
 		tvimage, 255B-bytscl(congrid(north.image,256,256)), Pos=[0.031, 0.024, 0.431, 0.333]
 		tvimage, 255B-bytscl(congrid(south.image,256,256)), Pos=[0.569, 0.024, 0.969, 0.333]
 
 		; S2KB: field-of-view and bad column plots
 		plot, [0,0], /NoData, /NoErase, Pos=[0.031, 0.357, 0.831, 0.976], $
-			XRange=[1,2500], XStyle=5, YRange=[1,2500], YStyle=5
+			XRange=[1,2500], XStyle=5, YRange=[1,2500], YStyle=5, Thick=2.0
 		frame = s2kb_setup.view_frame - 1024L
 		
 		if 79 GT frame[0] AND 79 LT frame[2] AND -280 LT frame[3] then begin
 			yrange = [max([-280, frame[1]]), min([1024, frame[3]])]
-			oplot, [79, 79]+1250,yrange+1250, Thick=2.0
+			oplot, [79, 79]+1250,yrange+1250, Thick=2.0, Color=FSC_Color('Red')
 		endif
 		if -512 GT frame[0] AND -513 LT frame[2] AND 108 LT frame[3] then begin
 			yrange = [max([108, frame[1]]), min([1024, frame[3]])]
-			oplot, [-513, -513]+1250, yrange+1250, Thick=2.0
+			oplot, [-513, -513]+1250, yrange+1250, Thick=2.0, Color=FSC_Color('Red')
 		endif
 		oplot, [frame[0], frame[0], frame[2], frame[2], frame[0]]+1250, $
-			[frame[1], frame[3], frame[3], frame[1], frame[1]]+1250, Color=0
+			[frame[1], frame[3], frame[3], frame[1], frame[1]]+1250, Thick=2.0
 		
 		oplot, 400*[-0.5,0.5]+300, [1,1]+100, Thick=2.0
 		xyouts, 300, 120, '4''', /Data, Alignment=0.5
@@ -1138,7 +1283,7 @@ case uvalue of
 			x = cos(north.gsc.dej2000[valid]/!radeg)*(-(north.gsc.raj2000)[valid]+nra)*3600.0/0.2 + 1050
 			y = ((north.gsc.dej2000)[valid]-ndec)*3600.0/0.2 + 1050
 			oplot, x,y, PSym=6, Thick=2.0
-			xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data
+			xyouts, x+100, y-100, string((north.gsc.vmag)[valid],Format='(F4.1)'),/Data, CharThick=2.0
 		endif
 
 		oplot, 300*[-0.5,0.5]+300, [1,1]+100, Thick=2.0
@@ -1156,27 +1301,31 @@ case uvalue of
 			x = cos(south.gsc.dej2000[valid]/!radeg)*(-(south.gsc.raj2000)[valid]+sra)*3600.0/0.2 + 1050
 			y = ((south.gsc.dej2000)[valid]-sdec)*3600.0/0.2 + 1050
 			oplot, x,y, PSym=6, Thick=2.0
-			xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'), /Data
+			xyouts, x+100, y-100, string((south.gsc.vmag)[valid],Format='(F4.1)'), /Data, CharThick=2.0
 		endif
 
 		oplot, 300*[-0.5,0.5]+300, [1,1]+100, Thick=2.0
 		xyouts, 300, 120, '1''', /Data, Alignment=0.5
 
 		;+ Labels
-		xyouts, 0.431, 0.980, 'S2KB', /Norm, Alignment=0.5
-		xyouts, 0.231, 0.337, 'North Guide Camera', /Norm, Alignment=0.5
-		xyouts, 0.769, 0.337, 'South Guide Camera', /Norm, Alignment=0.5
+		xyouts, 0.431, 0.980, 'S2KB', /Norm, Alignment=0.5, CharSize=1.1, CharThick=2.0
+		xyouts, 0.231, 0.337, 'North Guide Camera', /Norm, Alignment=0.5, CharSize=1.1, CharThick=2.0
+		xyouts, 0.769, 0.337, 'South Guide Camera', /Norm, Alignment=0.5, CharSize=1.1, CharThick=2.0
 		
 		xyouts, 0.845, 0.966, 'RA:  '+string(sixty(s2kb_setup.ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))'), /Norm, $
-			CharSize=0.85
+			CharSize=0.85, CharThick=2.0
 		xyouts, 0.845, 0.951, 'Dec: '+string(sixty(s2kb_setup.dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))'), /Norm, $
-			CharSize=0.85
+			CharSize=0.85, CharThick=2.0
 
 		device, /close
 		set_plot, thisDevice
 			
-		spawn, printer+' ~/setup_temp.ps'
-		spawn, 'rm -rf ~/setup_temp.ps'
+		spawn, printer+' s2kb_printer.ps'
+		if strcmp(strupcase(!Version.OS_Family), 'UNIX') then begin
+			spawn,'rm -rf s2kb_printer.ps'
+		endif else begin
+			spawn,'erase /F /Q s2kb_printer.ps'
+		endelse
 
 		widget_control, event.top, /destroy
 	end

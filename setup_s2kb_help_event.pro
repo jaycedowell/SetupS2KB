@@ -8,7 +8,7 @@ sections = replicate(section, 9)
 
 section = sections[0]
 section.title='Overview'
-section.text = ['There are three main parts to this window.  Located at the top are two panels, "S2KB Pointing" and "Guide Camera Limiting Magnitude", that control the position of the field and the sensitivity of the guide camera.  The values in "S2KB Pointing" are Initial RA/Dec., Offset RA/Dec., and Current RA/Dec.  Initial refers to the initial pointing of the field and all offsets are calculated from this position.  Offset refers to the right ascension and declination offsets that lead to the currently displayed pointing.  Finally, the Current settings give the coordinates associated with the currently displayed pointing.  At start up, all values are set to zero.  The "Guide Camera Limiting Magnitude" panel controls to what  magnitude stars are labeled on the North and South guide camera images.  Stars found in the HST Guide Star Catalog v2.3.2 with V-band magnitudes less than or equal to the displayed value are labeled by their magnitudes.  The default is to label all stars brighter than 14.5 mag, the sensitivity limit of the two guide cameras.  The "+0.5 mag" and "-0.5 mag" buttons located at the bottom of this panel can be used to increase or decrease this limiting magnitude.', ' ', 'The next section of the window contains the three image areas.  The largest display is a 25''x25'' DSS Blue2 image that represents the current field of view as seen by S2KB.  This image is purposely oversized to allow the user to see what is around the edge of the field.  The displays come with a number of overlays turned on by default.  The purple box denotes the center of S2KB (pixel 1024,1024) while the large green boxes represent the field of view of each camera.  To accommodate observers who wish to only read out a portion of the chip, the field of view of S2KB can be changed through the "Field of View" menu.  This is detailed in Section 5.   The red lines show the locations of the bad columns on S2KB and white bars in the lower left of each display indicate scale.  The yellow triangles in the field indicate NED galaxies with known velocities and are overlayed by default.  Usage of the NED overlay is given in Section 7.  The upper right-hand display is for the North camera while the lower right-hand display is for the South camera.  These fields are both 7''x7'' DSS Blue2 images.  Stars brighter than the current guide camera limiting magnitude are denoted by blue boxes and labeled by their V-band apparent magnitudes.', ' ', 'The final section of the main Setup S2KB window is the NED source list.  For every NED object labeled in the field, its name, type, and velocity are listed here.  This list is automatically updated for each new pointing.']
+section.text = ['There are three main parts to this window.  Located at the top are two panels, "S2KB Pointing" and "Guide Camera Limiting Magnitude", that control the position of the field and the sensitivity of the guide camera.  The values in "S2KB Pointing" are Initial RA/Dec., Offset RA/Dec., and Current RA/Dec.  Initial refers to the initial pointing of the field and all offsets are calculated from this position.  Offset refers to the right ascension and declination offsets that lead to the currently displayed pointing.  Finally, the Current settings give the coordinates associated with the currently displayed pointing.  At start up, all values are set to zero.  The "Guide Camera Limiting Magnitude" panel controls to what  magnitude stars are labeled on the North and South guide camera images.  Stars found in the HST Guide Star Catalog v2.3.2 with V-band magnitudes less than or equal to the displayed value are labeled by their magnitudes.  The default is to label all stars brighter than 14.5 mag, the sensitivity limit of the two guide cameras.  The "+0.5 mag" and "-0.5 mag" buttons located at the bottom of this panel can be used to increase or decrease this limiting magnitude.', ' ', 'The next section of the window contains the three image areas.  The largest display is a 25''x25'' DSS or SDSS image that represents the current field of view as seen by S2KB.  This image is purposely oversized to allow the user to see what is around the edge of the field.  The displays come with a number of overlays turned on by default.  The purple box denotes the center of S2KB (pixel 1024,1024) while the large green boxes represent the field of view of each camera.  To accommodate observers who wish to only read out a portion of the chip, the field of view of S2KB can be changed through the "Field of View" menu.  This is detailed in Section 5.   The red lines show the locations of the bad columns on S2KB and white bars in the lower left of each display indicate scale.  The yellow triangles in the field indicate NED galaxies with known velocities and are overlayed by default.  Usage of the NED overlay is given in Section 7.  The upper right-hand display is for the North camera while the lower right-hand display is for the South camera.  These fields are both 7''x7'' DSS 1 images.  Stars brighter than the current guide camera limiting magnitude are denoted by blue boxes and labeled by their V-band apparent magnitudes.', ' ', 'The final section of the main Setup S2KB window is the NED source list.  For every NED object labeled in the field, its name, type, and velocity are listed here.  This list is automatically updated for each new pointing.']
 sections[0] = section
 
 section = sections[1]
@@ -28,7 +28,7 @@ sections[3] = section
 
 section = sections[4]
 section.title='Saving/Printing Images'
-section.text = ['It is also possible to create finding charts using Setup S2KB through the File -> Export JPEG and File -> Print options.  Export JPEG brings up a window that allows the current view to be saved to a JPEG.  The output file name is automatically suggested based on the current pointing center.  Both of the text boxes can be changed.  The JPEG is saved as gray scale and does not include any of the NED overlay objects.  It does, however, include the RA and declination of the field center, the bad columns, fields of view, and labeled guide stars.', ' ', 'The Print option creates an output similar to Export JPEG but sends it to a printer instead.  By default, this will use the ''lp'' command which sends the image to the default printer.  If you wish to use a different command, enter it in the text box provided.']
+section.text = ['It is also possible to create finding charts using Setup S2KB through the File -> Export JPEG and File -> Print options.  Export JPEG brings up a window that allows the current view to be saved to a JPEG.  The output file name is automatically suggested based on the current pointing center.  Both of the text boxes can be changed.  The JPEG is saved as a color image and does not include any of the NED overlay objects.  It does, however, include the RA and declination of the field center, the bad columns, fields of view, and labeled guide stars.', ' ', 'The Print option creates an output similar to Export JPEG but sends it to a printer instead.  By default, this will use the ''lp'' command which sends the image to the default printer.  If you wish to use a different command, enter it in the text box provided.']
 sections[4] = section
 
 section = sections[5]
@@ -48,7 +48,7 @@ sections[7] = section
 
 section = sections[8]
 section.title='Known Issues and Limitations'
-section.text = ['+ The print feature is UNIX/Linux specific.  For computers without ''lp'', i.e., Windows, this will generate an error.',' ','+ Setup S2KB is heavily dependent on a network connection and access to various services, such as NED and VizieR.  In the case of the DSS images, requests are first sent to archive.stsci.edu.  If the STSCI server does not answer, a request is sent to archive.eso.edu.  However, there is not automatic fall back for all services.  In particular, there is no alternative to NED for labeling objects in the field of view.  There is currently no way to disable all requests to NED.  There is also no way to pick-and-chose which request are sent to which servers.']
+section.text = ['+ The print feature is UNIX/Linux specific.  For computers without ''lp'', i.e., Windows, this will generate an error.',' ','+ Setup S2KB is heavily dependent on a network connection and access to various services, such as NED and VizieR.  In the case of the DSS images, requests are first sent to archive.stsci.edu.  If the STSCI server does not answer, a request is sent to archive.eso.edu.  However, there is not automatic fall back for all services.  In particular, there is no alternative to NED for labeling objects in the field of view.  There is currently no way to disable all requests to NED.  There is also no way to pick-and-chose which request are sent to which servers.',' ','+ There is currently no way to alter the image contrast or brightness a la DS9.']
 sections[8] = section
 
 if NOT xregistered('setup_s2kb_uguide', /NoShow) then begin
@@ -57,7 +57,7 @@ if NOT xregistered('setup_s2kb_uguide', /NoShow) then begin
 		next: 0L, prev: 0L }
 
 	labels = ['Overview', 'Pointing', 'Offsets', 'Changing Field Size', 'Saving/Printing Images', $
-		  'NED Overlays', 'Telescope Cache', 'Archival Images', 'Known Issues']
+			'NED Overlays', 'Telescope Cache', 'Archival Images', 'Known Issues']
 
 	base = widget_base(group_leader=s2kb_setup.baseID, title='Setup S2KB - User''s Guide', /Column, /Base_Align_Left, $
 		uvalue = 'about_base')
@@ -83,6 +83,7 @@ if NOT xregistered('setup_s2kb_uguide', /NoShow) then begin
 	sec_text = [sec_text, (section.text)[0:sec_end]]
 
 	widget_control, users_guide.textID, set_value=sec_text
+	widget_control, users_guide.prev, Sensitive=0
 endif
 
 end
@@ -99,7 +100,7 @@ widget_control, event.id, get_uvalue=uvalue
 case uvalue of
 	'sect_next': begin
 		curr_section = widget_info(users_guide.listID, /List_Select)
-		curr_section = ((curr_section + 1)<7)
+		curr_section = ((curr_section + 1)<8)
 
 		widget_control, users_guide.listID, Set_List_Select=curr_section
 		section = sections[curr_section]
@@ -138,6 +139,19 @@ case uvalue of
 	end
 	else:
 endcase
+
+if n_elements(curr_section) NE 0 then begin
+	if curr_section-1 LT 0 then begin
+		widget_control, users_guide.prev, Sensitive=0
+	endif else begin
+		widget_control, users_guide.prev, Sensitive=1
+	endelse
+	if curr_section+1 GT 8 then begin
+		widget_control, users_guide.next, Sensitive=0
+	endif else begin
+		widget_control, users_guide.next, Sensitive=1
+	endelse
+endif
 
 end
 

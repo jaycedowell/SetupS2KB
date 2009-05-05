@@ -130,6 +130,15 @@ PRO QueryDSS2, target, Image,  Header, IMSIZE=ImSIze, ESO=eso, STSCI=stsci, $
   ;;
   ;;
  if N_elements(survey) EQ 0 then survey = '1'
+ if strcmp(strlowcase(survey[0]), 'sdss') then begin
+	querysdss, [ra, dec], Image, Header, ImSize=ImSize, /Grayscale
+	return
+ end
+ if strcmp(strlowcase(survey[0]), 'sdssc') then begin
+	querysdss, [ra, dec], Image, Header, ImSize=ImSize
+	return
+ end
+
  dss = strlowcase(strtrim(strmid(survey,0,2),2))
  if ESO then begin
   case dss of 

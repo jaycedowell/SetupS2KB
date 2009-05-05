@@ -241,8 +241,17 @@ for n=0L,(cache.Cache.Number-1) do begin
 
 	if Object.RA2000 GE s2kb.ramin AND Object.RA2000 LE s2kb.ramax AND $
 	   Object.Dec2000 GE s2kb.decmin AND Object.Dec2000 LE s2kb.decmax then begin
-		plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=SymCat(9), Color=FSC_Color('Yellow')
-		xyouts, Object.RA2000, Object.Dec2000-1/3600.0, strcompress(Object.Name, /Remove_All)+' ', /Data, Color=FSC_Color('Yellow'), Align=1
+		if s2kb_setup.UseGIF OR strcmp(s2kb_setup.UseSurvey,'sdss') OR strcmp(s2kb_setup.UseSurvey,'sdssc') then begin
+			plots, Object.RA2000*[1,1], Object.Dec2000*[1,1], PSym=SymCat(9), Color=FSC_Color('Yellow')
+			xyouts, Object.RA2000, Object.Dec2000-1/3600.0, strcompress(Object.Name, /Remove_All)+' ', /Data, $
+				Color=FSC_Color('Yellow'), Align=1
+		endif else begin
+			ad2xy, Object.RA2000, Object.Dec2000, S2KB.Astrom, normx, normy
+			plots, normx*[1,1]/(size(S2KB.Image))[1], normy*[1,1]/(size(S2KB.Image))[2], $
+				PSym=SymCat(9), Color=FSC_Color('Yellow'), /Norm
+			xyouts, normx*[1,1]/(size(S2KB.Image))[1], normy*[1,1]/(size(S2KB.Image))[2], $
+				strcompress(Object.Name, /Remove_All)+' ', Color=FSC_Color('Yellow'), Align=1
+		endelse
 	endif 
 endfor
 
