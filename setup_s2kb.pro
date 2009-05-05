@@ -20,8 +20,11 @@ s2kb_setup = {baseID: 0L, RAID: 0L, DecID: 0L, oRAID: 0L, oDecID: 0L, cRAID: 0L,
 	      MagID: 0L, MagLimit: 14.5, $
 	      ra: 0.0, dec: 0.0, offset: [0.0, 0.0], $
 	      ramin: 0.0, ramax: 0.0, decmin: 0.0, decmax: 0.0, $
-	      jpeg_dir: strarr(1), jpeg_file: strarr(1), printer: 'lp', $
-	      res_name: 0L, res_ra: -9999., res_dec: -9999. , res_coord: 0L, res_source: 0L, prt_cmd: 0L, wscl: 1.0}
+	      jpeg_dlg: 0L, jpeg_dir: strarr(1), jpeg_file: strarr(1), jpeg_qual: 0L, printer: 'lp', $
+	      U_GIF_B: 0L, U_FITS_B: 0L, UseGIF: 1, $
+	      U_DSS1R: 0L, U_DSS2R: 0L, U_DSS2B: 0L, U_DSS2I: 0L, U_SDSS: 0L, U_SDSSC: 0L, UseSurvey: '2b', $
+	      res_name: 0L, res_name_value: '', res_ra: -9999., res_dec: -9999. , res_coord: 0L, res_source: 0L, $
+	      prt_cmd: 0L, wscl: 1.0}
 ned_control = {G: 0L, GG: 0L, QSO: 0L, PofG: 0L, S: 0L, SN: 0L, $
 	       U_Rad: 0L, U_Smm: 0L, U_Ifr: 0L, U_Vis: 0L, U_UlV: 0L, U_XRy: 0L, U_GRy: 0L, $
 	       UseG: 0, UseGG: 0, UseQSO: 0, UsePofG: 0, UseS: 0, UseSN: 0, $
@@ -51,12 +54,28 @@ s2kb_setup.baseID = main
 
 ;+ Menu Bar
 fmenu = widget_button(menu, value=' File ')
-  lcache_button  = widget_button(fmenu, value=' Load Telescope Cache      ', event_pro='setup_s2kb_cache_load')
-  resolve_button = widget_button(fmenu, value=' Resolve Name      ', event_pro='setup_s2kb_resolve', /Separator)
-  select_button  = widget_button(fmenu, value=' Select From Cache ', uvalue='target_select')
-  jpeg_button    = widget_button(fmenu, value=' Export JPEG       ', event_pro='setup_s2kb_jpeg', /Separator)
-  print_button   = widget_button(fmenu, value=' Print             ', event_pro='setup_s2kb_print')
-  exit_button    = widget_button(fmenu, value=' Exit              ', uvalue='exit_setup', /Separator)
+  lcache_button  = widget_button(fmenu, value=' Load Telescope Cache ', event_pro='setup_s2kb_cache_load')
+  resolve_button = widget_button(fmenu, value=' Resolve Name         ', event_pro='setup_s2kb_resolve', /Separator)
+  select_button  = widget_button(fmenu, value=' Select From Cache    ', uvalue='target_select')
+  jpeg_button    = widget_button(fmenu, value=' Export JPEG          ', event_pro='setup_s2kb_jpeg', /Separator)
+  print_button   = widget_button(fmenu, value=' Print                ', event_pro='setup_s2kb_print')
+  exit_button    = widget_button(fmenu, value=' Exit                 ', uvalue='exit_setup', /Separator)
+
+imenu = widget_button(menu, value=' Archival Images ')
+  s2kb_setup.U_DSS1R  = widget_button(imenu, value=' DSS 1 - Red                    ', uvalue='DSS1R', /Checked_Menu, event_pro='setup_s2kb_event')
+  s2kb_setup.U_DSS2R  = widget_button(imenu, value=' DSS 2 - Red                    ', uvalue='DSS2R', /Checked_Menu, event_pro='setup_s2kb_event')
+  s2kb_setup.U_DSS2B  = widget_button(imenu, value=' DSS 2 - Blue                   ', uvalue='DSS2B', /Checked_Menu, event_pro='setup_s2kb_event')
+  s2kb_setup.U_DSS2I  = widget_button(imenu, value=' DSS 2 - Near-IR                ', uvalue='DSS2I', /Checked_Menu, event_pro='setup_s2kb_event')
+  s2kb_setup.U_SDSS   = widget_button(imenu, value=' SDSS DR7 g''r''i'' - Grayscale ', uvalue='SDSS',  /Checked_Menu, $
+				event_pro='setup_s2kb_event')
+  s2kb_setup.U_SDSSC  = widget_button(imenu, value=' SDSS DR7 g''r''i'' - Color     ', uvalue='SDSSC', /Checked_Menu, $
+				event_pro='setup_s2kb_event')
+  nmenu = widget_button(imenu, value=' DSS Options ', /Menu, /Separator)
+    s2kb_setup.U_GIF_B  = widget_button(nmenu, value=' Use GIF  (fast, poor astrometry) ', uvalue='U_GIF',  /Checked_Menu, $
+				event_pro='setup_s2kb_event')
+    s2kb_setup.U_FITS_B = widget_button(nmenu, value=' Use FITS (slow, good astrometry) ', uvalue='U_FITS', /Checked_Menu, $
+				event_pro='setup_s2kb_event')
+  
 vmenu = widget_button(menu, value=' Field of View ')
   s2kb_setup.view_full_button = widget_button(vmenu, value=' Full Frame          ', uvalue='view_full', /Checked_Menu)
   s2kb_setup.view_half_button = widget_button(vmenu, value=' 1536x1536, Centered ', uvalue='view_half', /Checked_Menu)
@@ -64,6 +83,7 @@ vmenu = widget_button(menu, value=' Field of View ')
   s2kb_setup.view_cstm_button = widget_button(vmenu, value=' Custom Frame        ', uvalue='view_cstm', /Checked_Menu)
   custom_button               = widget_button(vmenu, value=' Set Custom Frame    ', uvalue='set_cstm', /Separator, $
 	event_pro='setup_s2kb_frame')
+
 cmenu = widget_button(menu, value=' Display Overlays ')
   s2kb_setup.ned_kwn_button =  widget_button(cmenu, value=' NED - All Known Velocity  ', uvalue='ned_known',   /Checked_Menu, $
 	event_pro='setup_s2kb_overlay_event')
@@ -81,6 +101,7 @@ cmenu = widget_button(menu, value=' Display Overlays ')
 	event_pro='setup_s2kb_overlay_event')
   s2kb_setup.cache_button   =  widget_button(cmenu, value=' Telescope Cache           ', uvalue='show_cache',  /Checked_Menu, $
 	event_pro='setup_s2kb_overlay_event', /Separator)
+
 omenu = widget_button(menu, value=' Object Types ')
   ned_control.G   =widget_button(omenu, value='Galaxies',          uvalue='G',    /Checked_Menu, event_pro='setup_s2kb_filter_event')
   ned_control.GG  =widget_button(omenu, value='Galaxy Groups',     uvalue='GG',   /Checked_Menu, event_pro='setup_s2kb_filter_event')
@@ -169,8 +190,8 @@ xmanager, 'setup_s2kb', main, /No_Block
 widget_control, s2kb_setup.view_full_button, Set_Button=1
 s2kb_setup.use_full = 1
 s2kb_setup.view_frame = [1L, 1L, 2048L, 2048L]
-widget_control, s2kb_setup.ned_kwn_button, Set_Button=1
-s2kb_setup.ned_known = 1
+; widget_control, s2kb_setup.ned_kwn_button, Set_Button=1
+; s2kb_setup.ned_known = 1
 widget_control, ned_control.G, Set_Button=1
 ned_control.UseG = 1
 
@@ -865,6 +886,12 @@ oplot, [frame[0], frame[0], frame[2], frame[2], frame[0]]+1250, $
 oplot, 400*[-0.5,0.5]+300, [1,1]+100, Color=FSC_Color('White')
 xyouts, 300, 120, '4''', /Data, Alignment=0.5, Color=FSC_Color('White')
 
+if strmatch(s2kb_setup.UseSurvey, 'sdss*') EQ 1 then begin
+	xyouts, 2200, 120, 'SDSS DR7', /Data, Alignment=0.5, Color=FSC_Color('White')
+endif else begin
+	xyouts, 2200, 120, 'DSS '+strupcase(s2kb_setup.UseSurvey), /Data, Alignment=0.5, Color=FSC_Color('White')
+endelse
+
 end
 
 
@@ -1168,6 +1195,7 @@ pro setup_s2kb_resolve, event
 common setup_s2kb_state
 
 if NOT xregistered('setup_s2kb_resolve', /NoShow) then begin
+	s2kb_setup.res_name_value = 'no name entered'
 	s2kb_setup.res_ra = -9999.
 	s2kb_setup.res_dec = -9999.
 
@@ -1211,52 +1239,81 @@ widget_control, event.id, get_uvalue = uvalue
 case uvalue of 
 	'resolve': begin
 		widget_control, s2kb_setup.res_name, get_value=name
-		widget_control, /hourglass
-		if strlen(name) NE 0 then begin
-			querycache, name, ra, dec, Found=Found
 
-			if Found then begin
-				s2kb_setup.res_ra = ra
-				s2kb_setup.res_dec = dec
+		if s2kb_setup.res_ra NE -9999. AND strcmp(name, s2kb_setup.res_name_value) EQ 1 then begin
+			s2kb_setup.ra = s2kb_setup.res_ra
+			s2kb_setup.dec = s2kb_setup.res_dec
+			s2kb_setup.offset = [0.0, 0.0]
+			
+			ra_str  = string(sixty(s2kb_setup.ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))')
+			dec_str = string(sixty(s2kb_setup.dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))')
+			offset_ra_str  = strcompress(string(0L))
+			offset_dec_str = strcompress(string(0L))
 
-				out_str  = string(sixty(ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))')
-				out_str  = 'RA:  '+out_str+'     Dec: '
-				out_str  = out_str+string(sixty(dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))')
-				out_str2 = 'Source: '+file_basename(cache.file)
-			endif else begin
-				querysimbad, name, ra, dec, Found=Found, /CADC
-		
+			widget_control, s2kb_setup.RAID, set_value=ra_str
+			widget_control, s2kb_setup.DecID, set_value=dec_str
+			widget_control, s2kb_setup.oRAID, set_value=offset_ra_str
+			widget_control, s2kb_setup.oDecID, set_value=offset_dec_str
+
+			widget_control, event.top, /destroy
+
+			widget_control, s2kb_setup.cRAID,  set_value=ra_str
+			widget_control, s2kb_setup.cDecID, set_value=dec_str
+
+			update_s2kb, s2kb_setup.ra, s2kb_setup.dec
+			update_guider, s2kb_setup.ra, s2kb_setup.dec
+		endif else begin
+			widget_control, /hourglass
+			if strlen(name) NE 0 then begin
+				querycache, name, ra, dec, Found=Found
+	
 				if Found then begin
 					s2kb_setup.res_ra = ra
 					s2kb_setup.res_dec = dec
+					s2kb_setup.res_name_value = name
+					
 	
 					out_str  = string(sixty(ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))')
 					out_str  = 'RA:  '+out_str+'     Dec: '
 					out_str  = out_str+string(sixty(dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))')
-					out_str2 = 'Source: SIMBAD'
+					out_str2 = 'Source: '+file_basename(cache.file)
 				endif else begin
-					querysimbad, name, ra, dec, Found=Found, /NED
-	
+					querysimbad, name, ra, dec, Found=Found, /CFA
+			
 					if Found then begin
 						s2kb_setup.res_ra = ra
 						s2kb_setup.res_dec = dec
+						s2kb_setup.res_name_value = name
 		
 						out_str  = string(sixty(ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))')
 						out_str  = 'RA:  '+out_str+'     Dec: '
 						out_str  = out_str+string(sixty(dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))')
-						out_str2 = 'Source: NED'
+						out_str2 = 'Source: SIMBAD'
 					endif else begin
-						out_str =  'Name cannot be resolved.'
-						out_str2 = 'Source: --'
+						querysimbad, name, ra, dec, Found=Found, /NED
+		
+						if Found then begin
+							s2kb_setup.res_ra = ra
+							s2kb_setup.res_dec = dec
+							s2kb_setup.res_name_value = name
+			
+							out_str  = string(sixty(ra/15.0, /TrailSign), Format='((I02)," ",(I02)," ",(F04.1))')
+							out_str  = 'RA:  '+out_str+'     Dec: '
+							out_str  = out_str+string(sixty(dec, /TrailSign), Format='((I+03)," ",(I02)," ",(I02))')
+							out_str2 = 'Source: NED'
+						endif else begin
+							out_str =  'Name cannot be resolved.'
+							out_str2 = 'Source: --'
+						endelse
 					endelse
 				endelse
+			endif else begin
+				out_str = 'Please enter a name.'
 			endelse
-		endif else begin
-			out_str = 'Please enter a name.'
+	
+			widget_control, s2kb_setup.res_coord, set_value=string(out_str, Format='(A-35)')
+			widget_control, s2kb_setup.res_source, set_value=string(out_str2, Format='(A-35)')
 		endelse
-
-		widget_control, s2kb_setup.res_coord, set_value=string(out_str, Format='(A-35)')
-		widget_control, s2kb_setup.res_source, set_value=string(out_str2, Format='(A-35)')
 	end
 
 	'goto': begin

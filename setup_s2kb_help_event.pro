@@ -4,7 +4,7 @@ common setup_s2kb_state
 common setup_2kb_guide, users_guide, sections
 
 section = {title: '', text: strarr(1000)}
-sections = replicate(section, 8)
+sections = replicate(section, 9)
 
 section = sections[0]
 section.title='Overview'
@@ -42,9 +42,14 @@ section.text = ['A properly formated version of a telescope cache file can be lo
 sections[6] = section
 
 section = sections[7]
+section.title='Survey Image Options'
+section.text = ['The S2KB field-of-view images can be changed through the ''Archival Images'' menu.  The options included are: First-generation DSS red images, Second-Generations DSS red, blue  or near-infrared images, and SDSS DR7 g''r''i'' composite images.  The SDSS images can be obtained either as gray scale or full color.',' ','The two options located below the survey choices control what types of DSS images are retrieved.  Selecting the GIF option results in smaller files sizes and improved network performance at the expense of an accurate WCS system while the FITS options retrieves a full FITS file.  If you are not concerned about the placement of objects near the edge of the S2KB field-of-view or have a slow internet connection speed, choose the download GIF files.']
+sections[7] = section
+
+section = sections[8]
 section.title='Known Issues and Limitations'
 section.text = ['+ The print feature is UNIX/Linux specific.  For computers without ''lp'', i.e., Windows, this will generate an error.',' ','+ Setup S2KB is heavily dependent on a network connection and access to various services, such as NED and VizieR.  In the case of the DSS images, requests are first sent to archive.stsci.edu.  If the STSCI server does not answer, a request is sent to archive.eso.edu.  However, there is not automatic fall back for all services.  In particular, there is no alternative to NED for labeling objects in the field of view.  There is currently no way to disable all requests to NED.  There is also no way to pick-and-chose which request are sent to which servers.']
-sections[7] = section
+sections[8] = section
 
 if NOT xregistered('setup_s2kb_uguide', /NoShow) then begin
 	users_guide = { listID: 0L, $
@@ -52,7 +57,7 @@ if NOT xregistered('setup_s2kb_uguide', /NoShow) then begin
 		next: 0L, prev: 0L }
 
 	labels = ['Overview', 'Pointing', 'Offsets', 'Changing Field Size', 'Saving/Printing Images', $
-			'NED Overlays', 'Telescope Cache', 'Known Issues']
+		  'NED Overlays', 'Telescope Cache', 'Archival Images', 'Known Issues']
 
 	base = widget_base(group_leader=s2kb_setup.baseID, title='Setup S2KB - User''s Guide', /Column, /Base_Align_Left, $
 		uvalue = 'about_base')
@@ -197,7 +202,7 @@ case uvalue of
 		     '                                             ', $
 		     '  Written, May 2008                          ', $
 		     '                                             ', $
-		     '  Last update: Thursday, September 4, 2008   ', $
+		     '  Last update: Monday, May 4 2009            ', $
 		     '  by Jayce Dowell (jdowell@astro.indiana.edu)']
 		
 		if NOT xregistered('setups2kb_help') then begin

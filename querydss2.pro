@@ -177,8 +177,8 @@ PRO QueryDSS2, target, Image,  Header, IMSIZE=ImSIze, ESO=eso, STSCI=stsci, $
       if not ESO then dss = 'DSS' + dss
       if Not keyword_set(GIF) then message,'Writing ' + dss + $
 	      ' FITS file ' + outfile,/inf
-      Result = webget(QueryURL, copyfile= outfile)
-      if keyword_set(GIF) then begin
+      Result = webget2(QueryURL, copyfile= outfile)
+      if keyword_set(GIF) and Result NE -1 then begin
 	      read_gif, OutFile, Image
 	      Header='No header found.'
 	      if strcmp(strupcase(!Version.OS_Family), 'UNIX') then begin
@@ -186,16 +186,45 @@ PRO QueryDSS2, target, Image,  Header, IMSIZE=ImSIze, ESO=eso, STSCI=stsci, $
               endif else begin
 		      spawn,'erase /F /Q '+OutFile
 	      endelse
-      endif
+      endif else begin
+	     if Result EQ -1 then begin
+		      error_str = '!cAn error occurrred while trying to retrieve the requested image.!cPlease retry or select a different image source.'
+
+		      old_device = !D.Name
+		      SET_PLOT,'Z'
+		      device, set_resolution = [512, 512]
+		      erase
+	              xyouts, 0.024, 0.980, error_str, /Norm, Color=FSC_Color('White'), CharSize=0.95
+		      Image = tvrd()
+		      device, /close
+		      Header='No header found.'
+		      SET_PLOT, old_device
+             endif
+      endelse
       return
   endif
-  Result = webget(QueryURL)
+  Result = webget2(QueryURL)
   Image = Result.Image
   Header = Result.ImageHeader
+
   ;;
   ;; error ?
   ;;
   IF N_Elements(Image) NE 1 THEN return
   message, 'Problem retrieving your image! The server answered:', /info
   print, Result.Text
+
+  error_str = '!cAn error occurrred while trying to retrieve the requested image.!cPlease retry or select a different image source.'
+
+  old_device = !D.Name
+  SET_PLOT,'Z'
+  device, set_resolution = [512, 512]
+  erase
+  xyouts, 0.024, 0.980, error_str, /Norm, Color=FSC_Color('White'), CharSize=0.95
+  Image = tvrd()
+  device, /close
+  Header='No header found.'
+  SET_PLOT, old_device
+
+  return
 END 

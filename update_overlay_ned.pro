@@ -181,7 +181,9 @@ hor, s2kb.ramax, s2kb.ramin
 ver, s2kb.decmin, s2kb.decmax
 plot, [0,0], /NoErase, /NoData, XRange=[s2kb.ramax, s2kb.ramin], YRange=[s2kb.decmin, s2kb.decmax], XStyle=5, YStyle=5, Pos=[0,0,1,1]
 
-if NOT Keyword_Set(Refresh) then begin
+;+ If refresh has not been sent, or we don't have a NED structure to work with, query
+;+ NED again.  This is getting to be slow so NED is being turned off by default.
+if (NOT Keyword_Set(Refresh)) or size( s2kb.NED, /Type) NE 8 then begin
 	queryned, (ra)[0], (dec)[0], [25.0, 25.0], NumberInfo=NumberInfo, Result=Result
 	
 	temp = s2kb
@@ -193,7 +195,7 @@ endif
 
 ;+ Begin printing out what we know
 list_count = 0
-if s2kb.Ned.Number NE 0 then ned_list = strarr(s2kb.NED.Number)
+if s2kb.NED.Number NE 0 then ned_list = strarr(s2kb.NED.Number)
 
 for n=0L,(s2kb.NED.Number-1) do begin
 	;+ Load current object
