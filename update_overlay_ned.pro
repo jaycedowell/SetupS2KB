@@ -109,7 +109,7 @@ endif else begin
 			else	 :	if strmatch(base.Type, '*\**') then base.NType=6 else base.NType=-1
 		endcase
 
-		base.Dist    = float(fields[8])
+		base.Dist    = float(fields[9])
 		if strlen(fields[5]) EQ 0 then begin
 			base.Velocity = -9999.9
 		endif else begin
@@ -268,6 +268,22 @@ for n=0L,(s2kb.NED.Number-1) do begin
 				did_plot = 0
 				for j=0L,(n_elements(Filters)-1) do begin
 					if s2kb_setup.ha_filters[Filters[j]] EQ 1 then begin
+						if s2kb_setup.NED_Known EQ 0 AND did_plot EQ 0 then begin
+							out_str = string(list_count, Format='(I3)')+': '+string(Object.Name, Format='(A-28)')+' ['+$
+							string(Object.Type, Format='(A-6)')+'] @ '
+							if Object.Velocity LT 30000.0 then begin
+								out_str = out_str+string(Object.Velocity,Format='(I6)')+' km/s'
+							endif else begin
+								out_str = out_str+'>30000 km/s'
+							endelse
+			
+							ned_list[list_count] = out_str+'  A'+string(6580+40*Filters[j],Format='(I4)')
+						endif
+
+						if s2kb_setup.NED_Known EQ 0 AND did_plot EQ 1 then begin
+							ned_list[list_count] = out_str+'/A'+string(6580+40*Filters[j],Format='(I4)')
+						endif
+
 						did_plot = 1
 						if s2kb_setup.UseGIF OR strcmp(s2kb_setup.UseSurvey,'sdss') OR $
 						  strcmp(s2kb_setup.UseSurvey,'sdssc') then begin
@@ -294,8 +310,14 @@ for n=0L,(s2kb.NED.Number-1) do begin
 endfor
 
 if list_count NE 0 then begin
-	ned_list = ned_list[0:(list_count-1)]
-	widget_control, s2kb_setup.NListID, set_value=ned_list
-endif
+	valid = where( strcmp(ned_list, '') NE 1 )
+	if valid[0] NE -1 then begin
+		widget_control, s2kb_setup.NListID, set_value=ned_list[valid]
+	endif else begin
+		widget_control, s2kb_setup.NListID, set_value=['']
+	endelse
+endif else begin
+	widget_control, s2kb_setup.NListID, set_value=['']
+endelse
 
 end

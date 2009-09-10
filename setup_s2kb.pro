@@ -846,6 +846,7 @@ widget_control, /hourglass
 wscl = s2kb_setup.wscl
 widget_control, s2kb.WinID, get_value=index
 wset, index
+xyouts,0.07,0.95,'Working...',/Norm
 
 if Keyword_Set(Refresh) then begin
 	if strcmp(s2kb_setup.UseSurvey, 'sdssc') then begin
@@ -888,10 +889,13 @@ endif else begin
 endelse
 
 update_overlay_defect, ra, dec, index
+widget_control, s2kb_setup.NListID, set_value=['Working...']
 use_ned_huh = s2kb_setup.ned_known + s2kb_setup.ned_unknown + total(s2kb_setup.ha_filters)
 if use_ned_huh NE 0 then begin
 	update_overlay_ned, ra, dec, index, Refresh=Refresh
-endif
+endif else begin
+	widget_control, s2kb_setup.NListID, set_value=['']
+endelse
 if s2kb_setup.tel_cache NE 0 then begin
 	update_overlay_cache, ra, dec, index, Refresh=Refresh
 endif
@@ -905,8 +909,13 @@ pro update_guider, ra, dec, Refresh=Refresh
 common setup_s2kb_state
 
 wscl = s2kb_setup.wscl
+widget_control, s2kb_setup.sgdwin, get_value=index
+wset, index
+xyouts,0.07,0.95,'Working...',/Norm
+
 widget_control, s2kb_setup.ngdwin, get_value=index
 wset, index
+xyouts,0.07,0.95,'Working...',/Norm
 
 nra = ra + 0.0/3600.0
 nra = (nra+360.0) mod 360.0
