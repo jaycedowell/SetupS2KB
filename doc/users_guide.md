@@ -177,12 +177,14 @@ The final section (one option) allows the user to overlay objects in the loaded 
 
 The Telescope Cache
 -------------------
-A properly formated version of a telescope cache file can be loaded into Setup S2KB and accessed.  The cache format is:
+A properly formatted version of a telescope cache file can be loaded into Setup S2KB and accessed.  The cache format is:
 
-L112_822	20:42:50.0	+00:15:30	2000	0.00	0.00	0.00
-BD75325	  08:10:49.3	+74:57:57	2000	0.00	0.00 	0.00
-Feige34	  10:39:36.7	+43:06:10	2000	0.00	0.00  0.00
-Feige66	  12:37:23.6	+25:04:00	2000	0.00	0.00  0.00
+```
+L112_822   20:42:50.0  +00:15:30  2000  0.00  0.00  0.00
+BD75325    08:10:49.3  +74:57:57  2000  0.00  0.00  0.00
+Feige34    10:39:36.7  +43:06:10  2000  0.00  0.00  0.00
+Feige66    12:37:23.6  +25:04:00  2000  0.00  0.00  0.00
+```
 
 Each columns are separated by one or more spaces.  The first column is the target name, the second is the target RA, the third is 
 the declination, and the fourth is the epoch.  
