@@ -14,7 +14,7 @@ Start Up
 Setup S2KB is currently installed on sage.  To start the program, open an xterm and type `/home/36inch/setup_s2kb.sh` at 
 the command prompt.  This will bring up an IDL start up dialog (shown in Figure 1) that needs to be clicked to continue.
 
-![Figure 1](doc/pic_0_idl.png)
+![Figure 1](pic_0_idl.png)
 
 Figure 1: IDL startup dialog which can be cleared by clicking the “Click to Continue” button.
 After the dialog disappears, the main program window, shown in Figure 2, appears.  
@@ -30,7 +30,7 @@ are labeled by their magnitudes.  The default is to label all stars brighter tha
 cameras.  The “+0.5 mag” and “-0.5 mag” buttons located at the bottom of this panel can be used to increase or decrease this 
 limiting magnitude.
 
-![Figure 2](doc/pic_3_running.png)
+![Figure 2](pic_3_running.png)
 
 Figure 2: Main program window for Setup S2KB with the field around NGC 4214 displayed.  Yellow triangles denote the locations 
 of galaxies in NED with known velocities.
@@ -61,7 +61,7 @@ will change to an hourglass while the images are being loaded and NED is being q
 If you do not already have the coordinates for your target, Setup S2KB has a built-in name resolver that uses SIMBAD.  To access 
 this, select File -> Resolve Name.  This brings up the window shown in Figure 3.
 
-![Figure 3](doc/pic_2_resolve.png)
+![Figure 3](pic_2_resolve.png)
 
 Figure 3: SIMBAD name resolver window.
 
@@ -87,7 +87,7 @@ the total area) that is centered on pixel (1024,1024) that is equivalent to usin
 "Custom Frame", allows the observer to set a custom frame size in the same fashion as `epar detpars`.  The custom frame size is 
 set using Field of View -> Set Custom Frame.  This option bring up the window shown in Figure 4.
 
-![Figure 4](doc/pic_4_custom.png)
+![Figure 4](pic_4_custom.png)
 
 Figure 4: Dialog window used to set and display a custom frame for S2KB.
 
@@ -102,11 +102,11 @@ suggested based on the current pointing center.  Both of the text boxes can be c
 not include any of the NED overlay objects.  It does, however, include the RA and declination of the field center, the bad 
 columns, fields of view, and labeled guide stars.
 
-![Figure 5](doc/pic_5_jpeg.png)
+![Figure 5](pic_5_jpeg.png)
 
 Figure 5: Window used to save a JPEG of the current view.
 
-![Figure 6](doc/pic_6_print.png)
+![Figure 6](pic_6_print.png)
 
 Figure 6: Print window.
 
@@ -119,7 +119,7 @@ The NED Overlays
 Some of the more complicated aspects of this program deal with the NED overlays.  Control of the overlays are accomplished through 
 the "Object Types" and "Display Overlays" menus.
 
-![Figure 7](doc/pic_8_filter.png)
+![Figure 7](pic_8_filter.png)
 
 Figure 7: Image of the "Display Filters" menu.
 
@@ -149,7 +149,7 @@ Display Overlays:
 This menu, pictured in Figure 8, controls which overlays are displayed and has three sections.  The upper section (two options) 
 sets which NED objects matching the selected criteria set under "Object Types" should be displayed based on velocity information.  
 
-![Figure 8](doc/pic_7_overlay.png)
+![Figure 8](pic_7_overlay.png)
 
 Figure 8: Image of the "Display Overlays" menu.
 
@@ -189,7 +189,7 @@ Feige66    12:37:23.6  +25:04:00  2000  0.00  0.00  0.00
 Each columns are separated by one or more spaces.  The first column is the target name, the second is the target RA, the third is 
 the declination, and the fourth is the epoch.  
 
-![Figure 9](doc/pic_10_cache.png)
+![Figure 9](pic_10_cache.png)
 
 Figure 9: Dialog window to load a telescope cache.
 
@@ -199,7 +199,7 @@ a dialog window (Figure 9).  Note:  A copy of the cache must be stored on sage.
 Once the cache is loaded, targets can be selected from the cache in two ways.  The most direct is through File -> Select From Cache.  
 This brings up the window shown in Figure 10.
 
-![Figure 10](doc/pic_11_select.png)
+![Figure 10](pic_11_select.png)
 
 Figure 10: Selection dialog for the telescope cache.
 
